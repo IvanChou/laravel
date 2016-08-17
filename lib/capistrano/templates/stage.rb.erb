@@ -1,0 +1,36 @@
+set :stage, :<%= entry[:stage] %>
+set :branch, ENV['BRANCH'] || 'master'
+
+# used in case we're deploying multiple versions of the same
+# app side by side. Also provides quick sanity checks when looking
+# at filepaths
+set :full_app_name, "#{fetch(:application)}_#{fetch(:stage)}"
+
+set :deploy_to, "/data/projects/#{fetch(:application)}"
+set :enable_ssl, false
+
+# server-based syntax
+# ======================
+# Defines a single server with a list of roles and multiple properties.
+# You can define all roles on a single server, or split them:
+
+# server 'example.com', user: 'deploy', roles: %w{app db web}, my_property: :my_value
+# server 'example.com', user: 'deploy', roles: %w{app web}, other_property: :other_value
+# server 'db.example.com', user: 'deploy', roles: %w{db}
+
+# setup_config options
+# ======================
+# Server name use for nginx, default: localhost
+# set :server_name, 'localhost'
+
+# Which user to run nginx, default: nginx
+# set :nginx_user, 'nginx'
+
+# Bind for php-fpm, default: unix:/run/php/#{fetch(:php_fpm)}.sock
+# set :bind, '127.0.0.1:8080'
+
+# Where to set fpm pool config, default: nil
+# set :fpm_pool_path, ''
+
+# Where to set nginx server config, default: nil
+# set :nginx_server_path, ''

@@ -1,0 +1,51 @@
+log_format customized_<%= fetch(:application) %> 
+    '$remote_addr:$remote_port '
+    '$tcpinfo_rtt(±$tcpinfo_rttvar)μs '
+    '[$time_iso8601] $request_time "$request" '
+    '$status $body_bytes_sent "$http_referer" '
+    '"$http_user_agent" "$http_x_forwarded_for" '
+    'UPSTREAM $upstream_addr $upstream_response_time $upstream_status';
+
+server {
+    listen 80;
+    server_name <%= fetch(:server_name) %>;
+    root <%= fetch(:deploy_to) %>/current/public;
+    
+    index index.php index.html index.htm;
+    
+    access_log   /data/logs/nginx/<%= fetch(:application) %>.log   customized_<%= fetch(:application) %>;
+    error_log    /data/logs/nginx/<%= fetch(:application) %>.error.log warn;
+
+    # 修改为 Laravel 转发规则
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # PHP 支持
+    location ~ \.php$ {
+        try_files  $uri  /index.php  =404;
+        fastcgi_split_path_info  ^(.+\.php)(/.+)$;
+        fastcgi_pass  <%= fetch(:bind) %>;
+        fastcgi_index  index.php;
+        include  fastcgi.conf;
+        
+        #fastcgi_intercept_errors on;
+    }
+    
+    location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$ {
+        expires 30d;
+        access_log  off;
+        log_not_found  off;
+    }
+
+    location ~ .*\.(js|css)?$ {
+        expires 7d;
+        access_log  off;
+    }
+
+    location = /favicon.ico  { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+    location = /download.html  { access_log off; log_not_found off; }
+    
+    # error_page   500 502 503 504  /50x.html;
+}

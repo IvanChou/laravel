@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+
+require 'erb'
+require 'pathname'
+require 'capistrano/all'
+
+# desc 'Install Capistrano Laravel, cap_laravel install STAGES=staging,production'
+def laravel_install(stages = 'staging,production')
+  config_dir = Pathname.new('config')
+  deploy_dir = config_dir.join('deploy')
+
+  deploy_rb = File.expand_path('../../lib/capistrano/templates/deploy.rb.erb', __FILE__)
+  stage_rb = File.expand_path('../../lib/capistrano/templates/stage.rb.erb', __FILE__)
+  capfile = File.expand_path('../../lib/capistrano/templates/Capfile', __FILE__)
+
+  mkdir_p deploy_dir
+
+  entries = [{template: deploy_rb, file: config_dir.join('deploy.rb')}]
+  entries += stages.split(',').map { |stage| {template: stage_rb, file: deploy_dir.join("#{stage}.rb"), stage: stage} }
+
+  entries.each do |entry|
+    if File.exists?(entry[:file])
+      warn "[skip] #{entry[:file]} already exists"
+    else
+      File.open(entry[:file], 'w+') do |f|
+        f.write(ERB.new(File.read(entry[:template])).result(binding))
+        puts I18n.t(:written_file, scope: :capistrano, file: entry[:file])
+      end
+    end
+  end
+
+  if File.exists?('Capfile')
+    warn '[skip] Capfile already exists'
+  else
+    FileUtils.cp(capfile, 'Capfile')
+    puts I18n.t(:written_file, scope: :capistrano, file: 'Capfile')
+  end
+
+
+  puts I18n.t :capified, scope: :capistrano
+end
+
+case ARGV[0]
+  when 'install'
+    if /^STAGES=/ === ARGV[1]
+      laravel_install ARGV[1][7,140]
+    else
+      laravel_install
+    end
+  else
+    puts <<-HERE
+
+Install capistrano laravel in a project:
+    bundle exec cap_laravel install [STAGES=qa,staging,production,...]
+
+Command `cap_laravel` must be used to install capistrano/laravel only!
+
+Install capistrano in a project:
+    bundle exec cap install [STAGES=qa,staging,production,...]
+
+See full capistrano documentation at http://capistranorb.com/.
+
+    HERE
+end

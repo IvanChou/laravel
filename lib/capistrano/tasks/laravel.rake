@@ -8,13 +8,14 @@ namespace :load do
     set :laravel_roles, :all
     set :laravel_migrate_roles, :all
     set :laravel_version, 5.1
-    set :laravel_dotenv_file, './.env'
+    set :laravel_dotenv_file, './.env.example'
     set :laravel_artisan_flags, '--env=production'
-    set :laravel_artisan_migrate_flags, '--env=production'
+    set :laravel_artisan_migrate_flags, '--env=production --force'
     set :laravel_set_linked_dirs, true
     set :laravel_set_acl_paths, true
     set :laravel_create_linked_acl_paths, true
     set :laravel_server_user, 'www-data'
+    set :laravel_phplint, false
 
     # Folders to link between releases
     set :laravel_4_linked_dirs, [
@@ -162,16 +163,23 @@ namespace :laravel do
 
   desc 'Rollback migrations against the database using Artisan.'
   task :rollback_db do
-    on roles fetch(:laravel_roles) do
+    on roles fetch(:laravel_migrate_roles) do
       within release_path do
         execute :php, :artisan, 'migrate:rollback', *args.extras, fetch(:laravel_artisan_migrate_flags)
       end
     end
   end
 
+  desc 'Check syntax error with PHPLint.'
+  task :phplint do
+    invoke 'laravel:artisan', :phplint if fetch(:laravel_phplint)
+  end
+
   before 'deploy:starting', 'laravel:configure_folders'
   after 'deploy:symlink:shared', 'laravel:create_linked_acl_paths'
   after 'deploy:symlink:shared', 'deploy:set_permissions:acl'
-  after 'deploy:symlink:shared', 'laravel:upload_dotenv_file'
-  before 'deploy:updated', 'laravel:optimize_release'
+  # after 'deploy:symlink:shared', 'laravel:upload_dotenv_file'
+  before 'deploy:updated', 'laravel:phplint'
+  after 'deploy:updated', 'laravel:optimize_release'
+
 end
