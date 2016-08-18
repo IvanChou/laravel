@@ -3,13 +3,13 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
-  spec.name          = 'capistrano-laravel'
+  spec.name          = 'capistrano-laravel-lazy'
   spec.version       = '0.0.3'
-  spec.authors       = ['Peter Mitchell', 'Andrew Miller']
-  spec.email         = ['peterjmit@gmail.com', 'ikari7789@yahoo.com']
+  spec.authors       = ['Ivan Chou', 'Peter Mitchell', 'Andrew Miller']
+  spec.email         = ['yiichou@gmail.com', 'peterjmit@gmail.com', 'ikari7789@yahoo.com']
   spec.description   = %q{Laravel specific deployment options for Capistrano 3.x}
   spec.summary       = %q{Laravel deployment for Capistrano 3.x}
-  spec.homepage      = 'https://github.com/capistrano/laravel'
+  spec.homepage      = 'https://github.com/IvanChou/laravel/tree/lazy'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
