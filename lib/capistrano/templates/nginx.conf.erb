@@ -16,12 +16,11 @@ server {
     access_log   /data/logs/nginx/<%= fetch(:application) %>.log   customized_<%= fetch(:application) %>;
     error_log    /data/logs/nginx/<%= fetch(:application) %>.error.log warn;
 
-    # 修改为 Laravel 转发规则
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }
 
-    # PHP 支持
+    # To PHP-FPM
     location ~ \.php$ {
         try_files  $uri  /index.php  =404;
         fastcgi_split_path_info  ^(.+\.php)(/.+)$;

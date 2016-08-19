@@ -15,7 +15,6 @@ namespace :load do
     set :laravel_set_acl_paths, true
     set :laravel_create_linked_acl_paths, true
     set :laravel_server_user, 'www-data'
-    set :laravel_phplint, false
 
     # Folders to link between releases
     set :laravel_4_linked_dirs, [
@@ -29,33 +28,33 @@ namespace :load do
     ]
 
     # Folders to set permissions on based on laravel version
-    set :laravel_4_acl_paths, [
-      'app/storage',
-      'app/storage/cache',
-      'app/storage/logs',
-      'app/storage/meta',
-      'app/storage/sessions',
-      'app/storage/views'
-    ]
-    set :laravel_5_acl_paths, [
-      'storage',
-      'storage/app',
-      'storage/framework',
-      'storage/framework/cache',
-      'storage/framework/sessions',
-      'storage/framework/views',
-      'storage/logs'
-    ]
-    set :laravel_5_1_acl_paths, [
-      'bootstrap/cache',
-      'storage',
-      'storage/app',
-      'storage/framework',
-      'storage/framework/cache',
-      'storage/framework/sessions',
-      'storage/framework/views',
-      'storage/logs'
-    ]
+    set :laravel_4_acl_paths, %w(
+      app/storage
+      app/storage/cache
+      app/storage/logs
+      app/storage/meta
+      app/storage/sessions
+      app/storage/views
+    )
+    set :laravel_5_acl_paths, %w(
+      storage
+      storage/app
+      storage/framework
+      storage/framework/cache
+      storage/framework/sessions
+      storage/framework/views
+      storage/logs
+     )
+    set :laravel_5_1_acl_paths, %w(
+      bootstrap/cache
+      storage
+      storage/app
+      storage/framework
+      storage/framework/cache
+      storage/framework/sessions
+      storage/framework/views
+      storage/logs
+    )
   end
 end
 
@@ -63,17 +62,15 @@ namespace :laravel do
   desc 'Set the ACL for the web user based on Laravel version.'
   task :configure_folders do
     laravel_version = fetch(:laravel_version)
-    laravel_linked_dirs = []
-    laravel_acl_paths = []
     if laravel_version < 5 # Laravel 4
-      laravel_linked_dirs = fetch(:laravel_4_linked_dirs)
-      laravel_acl_paths   = fetch(:laravel_4_acl_paths)
+      laravel_linked_dirs = fetch(:laravel_4_linked_dirs, [])
+      laravel_acl_paths   = fetch(:laravel_4_acl_paths, [])
     elsif laravel_version < 5.1 # Laravel 5
-      laravel_linked_dirs = fetch(:laravel_5_linked_dirs)
-      laravel_acl_paths   = fetch(:laravel_5_acl_paths)
+      laravel_linked_dirs = fetch(:laravel_5_linked_dirs, [])
+      laravel_acl_paths   = fetch(:laravel_5_acl_paths, [])
     else # Laravel 5.1 or greater
-      laravel_linked_dirs = fetch(:laravel_5_1_linked_dirs)
-      laravel_acl_paths   = fetch(:laravel_5_1_acl_paths)
+      laravel_linked_dirs = fetch(:laravel_5_1_linked_dirs, [])
+      laravel_acl_paths   = fetch(:laravel_5_1_acl_paths, [])
     end
 
     if fetch(:laravel_set_linked_dirs)
@@ -170,16 +167,10 @@ namespace :laravel do
     end
   end
 
-  desc 'Check syntax error with PHPLint.'
-  task :phplint do
-    invoke 'laravel:artisan', :phplint if fetch(:laravel_phplint)
-  end
-
   before 'deploy:starting', 'laravel:configure_folders'
   after 'deploy:symlink:shared', 'laravel:create_linked_acl_paths'
   after 'deploy:symlink:shared', 'deploy:set_permissions:acl'
   # after 'deploy:symlink:shared', 'laravel:upload_dotenv_file'
-  before 'deploy:updated', 'laravel:phplint'
   after 'deploy:updated', 'laravel:optimize_release'
 
 end

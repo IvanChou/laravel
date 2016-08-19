@@ -20,7 +20,7 @@ set :repo_url, 'git@example.com:me/my_repo.git'
 # set :log_level, :debug
 
 # Default value for :pty is false
-set :pty, true
+# set :pty, false
 
 # Default value for :linked_files is []
 set :linked_files, ['.env']
@@ -48,8 +48,11 @@ set :laravel_version, 5.2
 # Default value for :laravel_server_user is true
 # set :laravel_server_user, 'www-data'
 
-# Default value for :laravel_phplint is false
-# set :laravel_phplint, false
+# Default value for :enable_phplint is false
+# set :enable_phplint, false
+
+# Default value for :packagist_repo is empty
+# set :packagist_repo, 'https://packagist.phpcomposer.com'
 
 # See more configuration at https://github.com/capistrano/laravel.
 

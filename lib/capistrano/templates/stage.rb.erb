@@ -26,7 +26,7 @@ set :enable_ssl, false
 # Which user to run nginx, default: nginx
 # set :nginx_user, 'nginx'
 
-# Bind for php-fpm, default: unix:/run/php/#{fetch(:php_fpm)}.sock
+# Bind for php-fpm, default: unix:/run/php/#{fetch(:full_app_name)}.sock
 # set :bind, '127.0.0.1:8080'
 
 # Where to set fpm pool config, default: nil
