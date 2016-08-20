@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'capistrano-laravel-lazy'
-  spec.version       = '0.0.3.1'
+  spec.version       = '0.0.3.2'
   spec.authors       = ['Ivan Chou', 'Peter Mitchell', 'Andrew Miller']
   spec.email         = ['yiichou@gmail.com', 'peterjmit@gmail.com', 'ikari7789@yahoo.com']
   spec.description   = %q{Laravel specific deployment options for Capistrano 3.x}
